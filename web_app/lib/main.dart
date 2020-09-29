@@ -11,7 +11,7 @@ const pageWidthCm = 10.0;
 
 double centimeterToPixel(BuildContext context, double cm) {
   var ratio = MediaQuery.of(context).devicePixelRatio * 160 / 2.54;
-  return min(cm * ratio, MediaQuery.of(context).size.width);
+  return min(cm * ratio, MediaQuery.of(context).size.width - 20);
 }
 
 const api = BoulderhausAPI();
@@ -22,7 +22,7 @@ class App extends StatelessWidget {
     var loginStatus = api.loginStatus();
 
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Boulderhaus booking',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -263,18 +263,20 @@ class _ModifyUserState extends State<ModifyUser> {
       body: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            constraints: BoxConstraints(maxWidth: centimeterToPixel(context, pageWidthCm)),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                UserSettings(settingsController, readOnly: state == ModifyUserState.saving),
-                SizedBox(height: 10),
-                SizedBox(
-                  width: double.infinity,
-                  child: button
-                )
-              ]
+          SingleChildScrollView(
+            child: Container(
+              constraints: BoxConstraints(maxWidth: centimeterToPixel(context, pageWidthCm)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  UserSettings(settingsController, readOnly: state == ModifyUserState.saving),
+                  SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: button
+                  )
+                ]
+              )
             )
           )
         ]
@@ -527,6 +529,8 @@ class _CreateUserPageState extends State<CreateUserPage> {
   UserSettingsController settingsController;
   CreateUserState createUserState;
   bool failedPreviously;
+  bool haveSubscription;
+  bool haveSubscriptionUnchecked;
 
   @override
   void initState() {
@@ -534,6 +538,8 @@ class _CreateUserPageState extends State<CreateUserPage> {
     settingsController = UserSettingsController(withUsername: true);
     createUserState = CreateUserState.fillingOut;
     failedPreviously = false;
+    haveSubscription = false;
+    haveSubscriptionUnchecked = false;
   }
 
   @override
@@ -545,15 +551,24 @@ class _CreateUserPageState extends State<CreateUserPage> {
   @override
   Widget build(BuildContext context) {
     var creatingUser = createUserState == CreateUserState.creatingUser;
-
+    var subscriptionCheckbox = null;
+    var color = null;
     var button = null;
+
     if (creatingUser) {
       button = RaisedButton.icon(
         icon: SizedBox(height: 20, width: 20, child: CircularProgressIndicator()),
         label: Text("Create user"),
       );
+
+      subscriptionCheckbox = Checkbox(value: haveSubscription);
     } else {
       button = RaisedButton(child: Text("Create user"), onPressed: () {
+          if (!haveSubscription) {
+            setState(() => haveSubscriptionUnchecked = true);
+            return;
+          }
+
           setState(() => createUserState = CreateUserState.creatingUser);
 
           var info = settingsController.info();
@@ -570,7 +585,33 @@ class _CreateUserPageState extends State<CreateUserPage> {
               }
           });
       });
+
+      if (haveSubscriptionUnchecked) {
+        color = Color(0xffe53935);
+      }
+
+      subscriptionCheckbox = Checkbox(onChanged: (value) {
+          setState(() {
+              haveSubscription = value;
+              haveSubscriptionUnchecked = false;
+          });
+        },
+        value: haveSubscription
+      );
+
+      subscriptionCheckbox = Theme(
+        data: ThemeData(unselectedWidgetColor: color),
+        child: subscriptionCheckbox
+      );
     }
+
+    subscriptionCheckbox = Row(
+      children: [
+        subscriptionCheckbox,
+        Text("I have a subscription", style: TextStyle(color: color))
+      ]
+    );
+
 
     var errorText = null;
     if (failedPreviously) {
@@ -582,19 +623,26 @@ class _CreateUserPageState extends State<CreateUserPage> {
       body: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            constraints: BoxConstraints(maxWidth: centimeterToPixel(context, pageWidthCm)),
-            child:
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                UserSettings(settingsController, readOnly: creatingUser, onAnyChanged: () => setState(() => failedPreviously = false)),
-                SizedBox(height: 10),
-                SizedBox(
-                  width: double.infinity,
-                  child: button
-                )
-              ]
+          SingleChildScrollView(
+            child: Container(
+              constraints: BoxConstraints(maxWidth: centimeterToPixel(context, pageWidthCm)),
+              child:
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  UserSettings(settingsController, readOnly: creatingUser, onAnyChanged: () => setState(() => failedPreviously = false)),
+                  SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: subscriptionCheckbox,
+                  ),
+                  SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: button
+                  )
+                ]
+              )
             )
           )
         ]
