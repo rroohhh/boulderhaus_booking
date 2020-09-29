@@ -489,6 +489,7 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Text("Book your Boulderhaus Heidelberg Slot with an single click (after creating an account)"),
                 TextField(controller: _usernameController, readOnly: readOnly, onChanged: (_) => setState(() => failedPreviously = false), decoration: InputDecoration(filled: true, labelText: "Username", errorText: errorText)),
                 SizedBox(height: 10),
                 TextField(controller: _passwordController, readOnly: readOnly, onSubmitted: (_) => onPressed(), onChanged: (_) => setState(() => failedPreviously = false), obscureText: true, decoration: InputDecoration(filled: true, labelText: "Password")),
