@@ -3,7 +3,10 @@ import 'package:async/async.dart';
 import 'dart:math';
 import 'api.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await CookieManager.init();
+
   runApp(App());
 }
 

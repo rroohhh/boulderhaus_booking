@@ -1,6 +1,9 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:html';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:universal_html/html.dart' as html;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 enum LoginStatus {
   loggedIn,
@@ -31,31 +34,77 @@ RequestStatus decodeStatus(String s) {
 }
 
 class CookieManager {
+  static Map<String, dynamic> cookies = Map<String, String>();
+
+  static init() async {
+    if (!kIsWeb) {
+        Directory dir = await getApplicationDocumentsDirectory();
+        var file = File("${dir.path}/cookies.json");
+
+        if (await file.exists()) {
+          var contents = await file.readAsString();
+          CookieManager.cookies = jsonDecode(contents);
+        }
+    }
+
+    return;
+  }
+
   static addToCookie(String key, String value) {
-     document.cookie = "$key=$value; max-age=2592000; path=/;";
+    try {
+      html.document.cookie = "$key=$value; max-age=2592000; path=/;";
+    } catch(e) {}
+
+    CookieManager.cookies[key] = value;
+
+    if (!kIsWeb) {
+      getApplicationDocumentsDirectory().then((dir) {
+        var file = File("${dir.path}/cookies.json");
+        file.writeAsString(jsonEncode(CookieManager.cookies));
+      });
+    }
   }
 
   static removeCookie(String key) {
-     document.cookie = "$key=0; max-age=0; path=/;";
+    try {
+      html.document.cookie = "$key=0; max-age=0; path=/;";
+    } catch(e) {}
+
+    CookieManager.cookies.remove(key);
+
+    if (!kIsWeb) {
+      getApplicationDocumentsDirectory().then((dir) {
+        var file = File("${dir.path}/cookies.json");
+        file.writeAsString(jsonEncode(CookieManager.cookies));
+      });
+    }
   }
 
   static String getCookie(String key) {
-    String cookies = document.cookie;
-    List<String> listValues = cookies.isNotEmpty ? cookies.split(";") : List();
-    String matchVal = "";
+    try {
+      String cookies = html.document.cookie;
+      List<String> listValues = cookies.isNotEmpty ? cookies.split(";") : List();
+      String matchVal = "";
 
-    for (int i = 0; i < listValues.length; i++) {
-      List<String> map = listValues[i].split("=");
-      String _key = map[0].trim();
-      String _val = map[1].trim();
+      for (int i = 0; i < listValues.length; i++) {
+        List<String> map = listValues[i].split("=");
+        String _key = map[0].trim();
+        String _val = map[1].trim();
 
-      if (key == _key) {
-        matchVal = _val;
-        break;
+        if (key == _key) {
+          matchVal = _val;
+          break;
+        }
       }
-    }
 
-    return matchVal;
+      return matchVal;
+    } catch(e) {}
+
+    if (CookieManager.cookies.containsKey(key)) {
+      return CookieManager.cookies[key];
+    } else {
+      return "";
+    }
   }
 }
 
@@ -64,9 +113,11 @@ const APIBase = "https://bh.vup.niemo.de/api/";
 class BoulderhausAPI {
   const BoulderhausAPI();
 
-  Future<LoginStatus> loginStatus() {
+  Future<LoginStatus> loginStatus() async {
     var cookies = _getCookies();
-    return http.get(APIBase + "status", headers: cookies).then((resp) => decodeLoginStatus(resp.body));
+
+    var resp = await http.get(APIBase + "status", headers: cookies);
+    return decodeLoginStatus(resp.body);
   }
 
   Map<String,String> _getCookies() {
