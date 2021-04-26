@@ -12,7 +12,7 @@ import secret as config
 import time
 import sys
 
-base = sys.argv[1] # "https://187.webclimber.de"
+base = 'https://' + sys.argv[1] 
 slot_url = base + '/de/booking/offer/1h-slot'
 
 if "187" in base:
@@ -155,11 +155,11 @@ Neue 1h slots ({place}):
 {slot_url}
 """
 
-def equal_1h_slots(new, old):
+def not_equal_1h_slots(new, old):
     if len(new) == 0:
-        return True
-    elif len(old) == 0:
         return False
+    elif len(old) == 0:
+        return True
     else:
         newest_new = list(reversed(sorted(new)))[0]
         newest_old = list(reversed(sorted(old)))[0]
@@ -181,9 +181,8 @@ while True:
         new_1h_slots = get_1h_slots()
         print("got 1h slots", new_1h_slots)
 
-        if equal_1h_slots(new_1h_slots, old_1h_slots):
+        if not_equal_1h_slots(new_1h_slots, old_1h_slots):
             notify(build_new_1h_slots_message(new_1h_slots))
-
-        old_offers = new_offers
+            old_1h_slots = new_1h_slots 
     except Exception as e:
         error_handler(e)
