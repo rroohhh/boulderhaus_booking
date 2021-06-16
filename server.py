@@ -2,9 +2,10 @@ from html.parser import HTMLParser
 from requests import Session
 import requests
 import json
-from xml.etree import ElementTree
 from pyquery import PyQuery as pq
 
+slot_name = "2h-slot-fuer-getestete-genesene-und-vollstaendig-geimpfte"
+api_base = f"https://187.webclimber.de/de/booking/offer/{slot_name}"
 
 class BoulderHausApi:
     def get_slots(date):
@@ -17,10 +18,10 @@ class BoulderHausApi:
             'persons': '1'
         }
 
-        r = requests.get(url = "https://187.webclimber.de/de/booking/offer/dein-slot",
+        r = requests.get(url = api_base,
                 params = params,
                 headers = {
-                    'Referer': 'https://187.webclimber.de/de/booking/offer/dein-slot',
+                    'Referer': api_base,
                     'X-Requested-With': 'XMLHttpRequest'
                 })
 
@@ -70,7 +71,7 @@ class BoulderHausApi:
 
     def book_slot(slot, user_info):
         s = Session()
-        s.head('https://187.webclimber.de/de/booking/offer/dein-slot')
+        s.head(api_base)
 
         r = s.get(slot)
 
