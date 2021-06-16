@@ -142,7 +142,6 @@ class BoulderHausApi:
 
 
 from flask import Flask, request, make_response
-from flask_cors import CORS
 from pathlib import Path
 import hashlib
 import os
@@ -204,7 +203,6 @@ class UserManager:
 app = Flask(__name__)
 user_manager = UserManager()
 api = BoulderHausApi()
-CORS(app)
 
 @app.route('/api/login', methods=['POST'])
 def login():
