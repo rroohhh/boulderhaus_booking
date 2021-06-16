@@ -108,7 +108,7 @@ class CookieManager {
   }
 }
 
-const APIBase = "https://bh.vup.niemo.de/api/";
+const APIBase = "https://bh.coroot.de/api/";
 
 class BoulderhausAPI {
   const BoulderhausAPI();
