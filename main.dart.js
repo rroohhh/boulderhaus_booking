@@ -35122,7 +35122,7 @@ pA:function(){var s=0,r=P.ab(t.gI),q,p=this,o,n
 var $async$pA=P.a7(function(a,b){if(a===1)return P.a8(b,r)
 while(true)switch(s){case 0:o=p.o5()
 s=3
-return P.ad(G.acU(P.f3("https://bh.vup.niemo.de/api/status"),o),$async$pA)
+return P.ad(G.acU(P.f3("https://bh.coroot.de/api/status"),o),$async$pA)
 case 3:n=b
 q=A.av_(B.n7(U.mZ(n.e).c.a.h(0,"charset")).co(0,n.x))
 s=1
@@ -35143,35 +35143,35 @@ m.n(0,"Content-type",p)
 m.n(0,"Accept",p)
 for(s=o.gdl(o),s=s.gO(s);s.q();){r=s.gC(s)
 m.n(0,r.gck(r),r.gm(r))}q=P.ap(["username",a,"password",b],n,n)
-return G.Om(P.f3("https://bh.vup.niemo.de/api/login"),C.a6.mB(q,null),m).bd(0,new A.Pv(),t.df)},
+return G.Om(P.f3("https://bh.coroot.de/api/login"),C.a6.mB(q,null),m).bd(0,new A.Pv(),t.df)},
 a5h:function(a,b,c){var s="application/json",r=t.N,q=P.ap(["Content-type",s,"Accept",s],r,r),p=P.ap(["username",a,"password",b,"info",c],r,t.z)
-return G.Om(P.f3("https://bh.vup.niemo.de/api/create_user"),C.a6.mB(p,null),q).bd(0,new A.Pu(),t.df)},
+return G.Om(P.f3("https://bh.coroot.de/api/create_user"),C.a6.mB(p,null),q).bd(0,new A.Pu(),t.df)},
 CV:function(a){var s="application/json",r=t.N,q=P.ap(["Content-type",s,"Accept",s],r,r),p=P.ap(["date",C.b.G(a.aaa(),0,10)],r,t.z)
-return G.Om(P.f3("https://bh.vup.niemo.de/api/list_slots"),C.a6.mB(p,null),q).bd(0,new A.Py(),t.j)},
+return G.Om(P.f3("https://bh.coroot.de/api/list_slots"),C.a6.mB(p,null),q).bd(0,new A.Py(),t.j)},
 a45:function(a){var s,r,q,p="application/json",o=this.o5(),n=t.N,m=P.v(n,n)
 m.n(0,"Content-type",p)
 m.n(0,"Accept",p)
 for(s=o.gdl(o),s=s.gO(s);s.q();){r=s.gC(s)
 m.n(0,r.gck(r),r.gm(r))}q=P.ap(["slot",a],n,n)
-return G.Om(P.f3("https://bh.vup.niemo.de/api/book_slot"),C.a6.mB(q,null),m).bd(0,new A.Pt(),t.df)},
+return G.Om(P.f3("https://bh.coroot.de/api/book_slot"),C.a6.mB(q,null),m).bd(0,new A.Pt(),t.df)},
 aaw:function(){var s,r,q="application/json",p=this.o5(),o=t.N
 o=P.v(o,o)
 o.n(0,"Content-type",q)
 o.n(0,"Accept",q)
 for(s=p.gdl(p),s=s.gO(s);s.q();){r=s.gC(s)
-o.n(0,r.gck(r),r.gm(r))}return G.acU(P.f3("https://bh.vup.niemo.de/api/user_info"),o).bd(0,new A.Pz(),t.a)},
+o.n(0,r.gck(r),r.gm(r))}return G.acU(P.f3("https://bh.coroot.de/api/user_info"),o).bd(0,new A.Pz(),t.a)},
 a8j:function(a){var s,r,q="application/json",p=this.o5(),o=t.N
 o=P.v(o,o)
 o.n(0,"Content-type",q)
 o.n(0,"Accept",q)
 for(s=p.gdl(p),s=s.gO(s);s.q();){r=s.gC(s)
-o.n(0,r.gck(r),r.gm(r))}return G.Om(P.f3("https://bh.vup.niemo.de/api/user_info"),C.a6.mB(a,null),o).bd(0,new A.Px(),t.df)},
+o.n(0,r.gck(r),r.gm(r))}return G.Om(P.f3("https://bh.coroot.de/api/user_info"),C.a6.mB(a,null),o).bd(0,new A.Px(),t.df)},
 a85:function(){var s,r,q="application/json"
 A.aeW("username")
 A.aeW("token")
 s=t.N
 r=P.ap(["Content-type",q,"Accept",q],s,s)
-return G.acU(P.f3("https://bh.vup.niemo.de/api/logout"),r).bd(0,new A.Pw(),t.df)}}
+return G.acU(P.f3("https://bh.coroot.de/api/logout"),r).bd(0,new A.Pw(),t.df)}}
 A.Pv.prototype={
 $1:function(a){var s,r,q
 for(s=a.e,r=s.gdl(s),r=r.gO(r);r.q();){q=r.gC(r)
