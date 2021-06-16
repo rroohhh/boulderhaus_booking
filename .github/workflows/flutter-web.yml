@@ -1,0 +1,29 @@
+name: flutter web ci
+
+# This workflow is triggered on pushes to the repository.
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '12.x'
+    - uses: subosito/flutter-action@v1
+      with:
+        channel: 'dev'
+    - run: cd web_app && flutter build web
+    - name: Deploy
+      id: pages
+      uses: peaceiris/actions-gh-pages@7e55c73ee896b01b8b8668370794b96f1bc9c759 #514
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_branch: gh-pages
+        publish_dir: ./web_app/build/web
+        allow_empty_commit: true

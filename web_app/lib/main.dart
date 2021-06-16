@@ -74,12 +74,12 @@ class Launcher extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data == LoginStatus.loggedIn) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
+            WidgetsBinding.instance!.addPostFrameCallback((_) {
                 Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => BookingPage()));
             });
             return Container();
           } else {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
+            WidgetsBinding.instance!.addPostFrameCallback((_) {
                 Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
             });
             return Container();
@@ -103,11 +103,11 @@ class BookingPage extends StatefulWidget {
 }
 
 class _BookingPageState extends State<BookingPage> {
-  CancelableOperation slotsFutureCanceler;
-  Future<List<dynamic>> slotsFuture;
-  List<dynamic> slots;
-  BookingPageState state;
-  DateTime selectedDate;
+  CancelableOperation? slotsFutureCanceler;
+  Future<Null>? slotsFuture;
+  late List<dynamic> slots;
+  late BookingPageState state;
+  DateTime? selectedDate;
 
   @override
   void initState() {
@@ -121,7 +121,7 @@ class _BookingPageState extends State<BookingPage> {
 
     if (slotsFuture == null) {
       slotsFutureCanceler = CancelableOperation.fromFuture(api.slots(DateTime.now()));
-      slotsFuture = slotsFutureCanceler.value.then((s) {
+      slotsFuture = slotsFutureCanceler!.value.then<Null>((s) {
           setState(() {
               slots = s;
               state = BookingPageState.haveSlots;
@@ -129,7 +129,7 @@ class _BookingPageState extends State<BookingPage> {
       });
     }
 
-    var slotsWidget = null;
+    var slotsWidget;
     if (state == BookingPageState.loadingSlots) {
       slotsWidget = CircularProgressIndicator();
     } else {
@@ -138,7 +138,7 @@ class _BookingPageState extends State<BookingPage> {
 
     var initialDate = currentDate;
     if (selectedDate != null) {
-      initialDate = selectedDate;
+      initialDate = selectedDate!;
     }
 
     return Scaffold(
@@ -146,13 +146,13 @@ class _BookingPageState extends State<BookingPage> {
         title: Text("Booking page"),
         actions: [
           IconButton(icon: Icon(Icons.edit), onPressed: () {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
+              WidgetsBinding.instance!.addPostFrameCallback((_) {
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                        return FutureBuilder(
+                        return FutureBuilder<Map<String, dynamic>>(
                           future: api.userInfo(),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
-                              return ModifyUser(snapshot.data);
+                              return ModifyUser(snapshot.data!);
                             } else {
                               return LoadingWidget("reading user data");
                             }
@@ -163,7 +163,7 @@ class _BookingPageState extends State<BookingPage> {
           }),
           IconButton(icon: Icon(Icons.exit_to_app), onPressed: () {
               api.logout().then((_) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                  WidgetsBinding.instance!.addPostFrameCallback((_) {
                       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Launcher(api.loginStatus())));
                   });
               });
@@ -188,7 +188,7 @@ class _BookingPageState extends State<BookingPage> {
                         selectedDate = date;
                         slotsFutureCanceler?.cancel();
                         slotsFutureCanceler = CancelableOperation.fromFuture(api.slots(date));
-                        slotsFuture = slotsFutureCanceler.value.then((s) {
+                        slotsFuture = slotsFutureCanceler!.value.then<Null>((s) {
                             setState(() {
                                 slots = s;
                                 state = BookingPageState.haveSlots;
@@ -224,8 +224,8 @@ class ModifyUser extends StatefulWidget {
 }
 
 class _ModifyUserState extends State<ModifyUser> {
-  UserSettingsController settingsController;
-  ModifyUserState state;
+  late UserSettingsController settingsController;
+  late ModifyUserState state;
 
 
   @override
@@ -240,14 +240,14 @@ class _ModifyUserState extends State<ModifyUser> {
 
   @override
   Widget build(BuildContext context) {
-    var button = null;
+    var button;
     if (state == ModifyUserState.editing) {
       button = RaisedButton(
         child: Text("Save"),
         onPressed: () {
           setState(() => state = ModifyUserState.saving);
           api.modifyUser(settingsController.info()).then((_) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
+              WidgetsBinding.instance!.addPostFrameCallback((_) {
                   Navigator.of(context).pop();
               });
             }
@@ -257,7 +257,8 @@ class _ModifyUserState extends State<ModifyUser> {
     } else {
       button = RaisedButton.icon(
         icon: SizedBox(height: 20, width: 20, child: CircularProgressIndicator()),
-        label: Text("saving")
+        label: Text("saving"),
+        onPressed: null
       );
     }
 
@@ -332,7 +333,7 @@ class SlotTile extends StatefulWidget {
 }
 
 class _SlotTileState extends State<SlotTile> {
-  SlotTileState state;
+  late SlotTileState state;
 
   @override
   void initState() {
@@ -343,12 +344,13 @@ class _SlotTileState extends State<SlotTile> {
   @override
   Widget build(BuildContext context) {
     var text = "Error";
-    var onPressed = null;
+    var onPressed;
     var button = RaisedButton.icon(
       icon: Icon(Icons.error, color: Colors.red),
-      label: Text(text)
+      label: Text(text),
+      onPressed: null
     );
-;
+
 
     if (state == SlotTileState.bookable) {
       text = "Book";
@@ -375,7 +377,8 @@ class _SlotTileState extends State<SlotTile> {
       text = "Booking";
       button = RaisedButton.icon(
         icon: SizedBox(width: 20, height: 20, child: CircularProgressIndicator()),
-        label: Text(text)
+        label: Text(text),
+        onPressed: null
       );
     }
 
@@ -383,7 +386,8 @@ class _SlotTileState extends State<SlotTile> {
       text = "Booked";
       button = RaisedButton.icon(
         icon: Icon(Icons.done, color: Colors.green),
-        label: Text(text)
+        label: Text(text),
+        onPressed: null
       );
     }
 
@@ -407,11 +411,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController _usernameController;
-  TextEditingController _passwordController;
+  late TextEditingController _usernameController;
+  late TextEditingController _passwordController;
   bool failedPreviously = false;
   LoginState loginState = LoginState.fillingOut;
-  Future<RequestStatus> loginFuture;
 
 
   @override
@@ -431,14 +434,14 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     var readOnly = loginState == LoginState.tryingLogin;
-    var onPressed = null;
+    var onPressed;
     if (!readOnly) {
       onPressed = () {
         setState(() {
             loginState = LoginState.tryingLogin;
             api.login(_usernameController.text, _passwordController.text).then((RequestStatus status) {
                 if (status == RequestStatus.ok) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                  WidgetsBinding.instance!.addPostFrameCallback((_) {
                       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => BookingPage()));
                   });
                 } else {
@@ -452,11 +455,12 @@ class _LoginPageState extends State<LoginPage> {
       };
     }
 
-    var button = null;
+    var button;
     if (readOnly){
       button = RaisedButton.icon(
         icon: SizedBox(height: 20, width: 20, child: CircularProgressIndicator()),
         label: Text("Login"),
+        onPressed: null
       );
     } else {
       button = RaisedButton(
@@ -465,19 +469,19 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
 
-    var createButton = null;
+    var createButton;
     if (readOnly) {
-      createButton = RaisedButton(child: Text("Create User"));
+      createButton = RaisedButton(child: Text("Create User"), onPressed: null);
     } else {
       createButton = RaisedButton(child: Text("Create User"), onPressed: () {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
+          WidgetsBinding.instance!.addPostFrameCallback((_) {
               Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => CreateUserPage()));
           });
         }
       );
     }
 
-    var errorText = null;
+    var errorText;
     if (failedPreviously) {
       errorText = "wrong username or password";
     }
@@ -529,11 +533,11 @@ class CreateUserPage extends StatefulWidget {
 
 
 class _CreateUserPageState extends State<CreateUserPage> {
-  UserSettingsController settingsController;
-  CreateUserState createUserState;
-  bool failedPreviously;
-  bool haveSubscription;
-  bool haveSubscriptionUnchecked;
+  late UserSettingsController settingsController;
+  late CreateUserState createUserState;
+  late bool failedPreviously;
+  late bool haveSubscription;
+  late bool haveSubscriptionUnchecked;
 
   @override
   void initState() {
@@ -554,17 +558,18 @@ class _CreateUserPageState extends State<CreateUserPage> {
   @override
   Widget build(BuildContext context) {
     var creatingUser = createUserState == CreateUserState.creatingUser;
-    var subscriptionCheckbox = null;
-    var color = null;
-    var button = null;
+    var subscriptionCheckbox;
+    var color;
+    var button;
 
     if (creatingUser) {
       button = RaisedButton.icon(
         icon: SizedBox(height: 20, width: 20, child: CircularProgressIndicator()),
         label: Text("Create user"),
+        onPressed: null
       );
 
-      subscriptionCheckbox = Checkbox(value: haveSubscription);
+      subscriptionCheckbox = Checkbox(value: haveSubscription, onChanged: null);
     } else {
       button = RaisedButton(child: Text("Create user"), onPressed: () {
           if (!haveSubscription) {
@@ -577,7 +582,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
           var info = settingsController.info();
           api.createUser(info["username"], info["password"], info).then((RequestStatus status) {
               if (status == RequestStatus.ok) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
+                WidgetsBinding.instance!.addPostFrameCallback((_) {
                     Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => BookingPage()));
                 });
               } else {
@@ -595,7 +600,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
 
       subscriptionCheckbox = Checkbox(onChanged: (value) {
           setState(() {
-              haveSubscription = value;
+              haveSubscription = value!;
               haveSubscriptionUnchecked = false;
           });
         },
@@ -616,7 +621,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
     );
 
 
-    var errorText = null;
+    var errorText;
     if (failedPreviously) {
       errorText = "creating user failed, maybe the username is already taken?";
     }
@@ -656,7 +661,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
 
 class UserSettingsController {
   List<String> settings = ["firstname", "lastname", "street", "postal_code", "city", "email", "phone", "birthdate", "customer_no"];
-  bool withUsername;
+  bool? withUsername;
   Map<String, TextEditingController> controllers = Map<String, TextEditingController>();
 
   UserSettingsController({this.withUsername}) {
@@ -664,7 +669,7 @@ class UserSettingsController {
       withUsername = false;
     }
 
-    if (withUsername) {
+    if (withUsername!) {
       settings = ["username", "password", ...settings];
     }
 
@@ -675,7 +680,7 @@ class UserSettingsController {
 
   void dispose() {
     for (var setting in settings) {
-      controllers[setting].dispose();
+      controllers[setting]!.dispose();
     }
   }
 
@@ -683,7 +688,7 @@ class UserSettingsController {
     var theInfo = Map<String, String>();
 
     for (var setting in settings) {
-      theInfo[setting] = controllers[setting].text;
+      theInfo[setting] = controllers[setting]!.text;
     }
 
     return theInfo;

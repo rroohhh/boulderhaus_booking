@@ -82,8 +82,8 @@ class CookieManager {
 
   static String getCookie(String key) {
     try {
-      String cookies = html.document.cookie;
-      List<String> listValues = cookies.isNotEmpty ? cookies.split(";") : List();
+      String cookies = html.document.cookie!;
+      List<String> listValues = cookies.isNotEmpty ? cookies.split(";") : [];
       String matchVal = "";
 
       for (int i = 0; i < listValues.length; i++) {
@@ -116,7 +116,7 @@ class BoulderhausAPI {
   Future<LoginStatus> loginStatus() async {
     var cookies = _getCookies();
 
-    var resp = await http.get(APIBase + "status", headers: cookies);
+    var resp = await http.get(Uri.parse(APIBase + "status"), headers: cookies);
     return decodeLoginStatus(resp.body);
   }
 
@@ -164,7 +164,7 @@ class BoulderhausAPI {
       'password': password,
     };
 
-    return http.post(APIBase + 'login', headers: headers, body: jsonEncode(body)).then((resp) {
+    return http.post(Uri.parse(APIBase + 'login'), headers: headers, body: jsonEncode(body)).then((resp) {
         for (var header in resp.headers.entries) {
           if (header.key == "x-token") {
             CookieManager.addToCookie("token", header.value);
@@ -191,7 +191,7 @@ class BoulderhausAPI {
       'info': info,
     };
 
-    return http.post(APIBase + 'create_user', headers: headers, body: jsonEncode(body)).then((resp) {
+    return http.post(Uri.parse(APIBase + 'create_user'), headers: headers, body: jsonEncode(body)).then((resp) {
         for (var header in resp.headers.entries) {
           if (header.key == "x-token") {
             CookieManager.addToCookie("token", header.value);
@@ -215,7 +215,7 @@ class BoulderhausAPI {
     Map<String,dynamic> body = {
       'date': date.toIso8601String().substring(0, 10),
     };
-    return http.post(APIBase + "list_slots", headers: headers, body: jsonEncode(body)).then((resp) => jsonDecode(resp.body));
+    return http.post(Uri.parse(APIBase + "list_slots"), headers: headers, body: jsonEncode(body)).then((resp) => jsonDecode(resp.body));
   }
 
   Future<RequestStatus> bookSlot(slot) {
@@ -231,7 +231,7 @@ class BoulderhausAPI {
       'slot': slot,
     };
 
-    return http.post(APIBase + 'book_slot', headers: headers, body: jsonEncode(body)).then((resp) {
+    return http.post(Uri.parse(APIBase + 'book_slot'), headers: headers, body: jsonEncode(body)).then((resp) {
         return decodeStatus(resp.body);
     });
   }
@@ -245,7 +245,7 @@ class BoulderhausAPI {
       ...cookies
     };
 
-    return http.get(APIBase + 'user_info', headers: headers).then((resp) {
+    return http.get(Uri.parse(APIBase + 'user_info'), headers: headers).then((resp) {
         return jsonDecode(resp.body);
     });
   }
@@ -259,7 +259,7 @@ class BoulderhausAPI {
       ...cookies
     };
 
-    return http.post(APIBase + 'user_info', headers: headers, body: jsonEncode(info)).then((resp) {
+    return http.post(Uri.parse(APIBase + 'user_info'), headers: headers, body: jsonEncode(info)).then((resp) {
         return decodeStatus(resp.body);
     });
   }
@@ -273,7 +273,7 @@ class BoulderhausAPI {
       'Accept': 'application/json',
     };
 
-    return http.get(APIBase + 'logout', headers: headers).then((resp) {
+    return http.get(Uri.parse(APIBase + 'logout'), headers: headers).then((resp) {
         return decodeStatus(resp.body);
     });
   }
