@@ -296,3 +296,7 @@ def token_from(r):
         return r.cookies["token"]
     if "X-Token" in r.headers:
         return r.headers["X-Token"]
+
+
+if __name__ == "__main__":
+    app.run(port=5558)
