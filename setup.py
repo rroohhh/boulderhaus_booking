@@ -9,9 +9,13 @@ setup(
         'flask',
         'pyquery',
         'requests',
+        'pyquery',
+        'influxdb_client',
+        'tinycss2'
     ],
     scripts=[
         'server.py',
         'notify.py',
+        'trafficlight.py'
     ]
 )
